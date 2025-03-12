@@ -10,6 +10,7 @@ import { routeTree } from './routeTree.gen'
 import { theme } from './theme'
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
+import 'mantine-react-table/styles.css'
 import './main.css'
 
 // Create a new router instance

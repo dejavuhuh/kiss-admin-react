@@ -1,5 +1,10 @@
+import type { ApiErrors } from '@/api'
+import type { SignInRequest } from '@/api/__generated/model/static'
+import { api } from '@/api'
+import { Form } from '@/components'
 import { GitHub, Google } from '@/components/icons'
 import { Twitter } from '@/components/icons/Twitter'
+import { notification } from '@/utils'
 import {
   ActionIcon,
   Anchor,
@@ -15,20 +20,27 @@ import {
   TextInput,
   Title,
 } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useCountdown } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_auth/sign-in')({
   component: SignIn,
 })
 
+function handleError(error: ApiErrors['authService']['signIn']) {
+  if (error.family === 'AUTH' && error.code === 'ACCOUNT_OR_PASSWORD_MISMATCH') {
+    notification.error({ message: '账号或密码错误' })
+  }
+}
+
 function SignIn() {
-  const form = useForm({
-    initialValues: {
-      email: '',
-      name: '',
-      password: '',
+  const navigate = Route.useNavigate()
+
+  const signIn = useMutation({
+    mutationFn: api.authService.signIn,
+    onSuccess() {
+      notification.success({ message: '欢迎回来' })
+      navigate({ to: '/' })
     },
   })
 
@@ -38,19 +50,28 @@ function SignIn() {
       <Text c="dimmed" size="xs" mb="md">
         使用您的手机号或者邮箱登录
       </Text>
-      <form onSubmit={form.onSubmit(() => {})}>
+      <Form<SignInRequest> onSubmit={async (body) => {
+        try {
+          await signIn.mutateAsync({ body })
+        }
+        catch (e: unknown) {
+          const error = e as ApiErrors['authService']['signIn']
+          handleError(error)
+        }
+      }}
+      >
         <Stack>
-          <TextInput required label="账号" placeholder="手机号/邮箱" />
-          <PasswordInput required label="密码" />
+          <TextInput name="account" required label="账号" placeholder="手机号/邮箱" />
+          <PasswordInput name="password" required label="密码" />
           <Group justify="space-between">
             <Checkbox size="sm" defaultChecked label="记住我" />
             <Anchor size="sm" href="https://mantine.dev/" target="_blank">
               忘记密码
             </Anchor>
           </Group>
-          <Button type="submit" fullWidth>登录</Button>
+          <Button type="submit" fullWidth loading={signIn.isPending}>登录</Button>
         </Stack>
-      </form>
+      </Form>
       <Divider label="或通过以下方式登录" labelPosition="center" my="md" />
       <Group justify="center">
         <ActionIcon size="lg" variant="default">
