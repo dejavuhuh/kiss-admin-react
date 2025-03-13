@@ -1,3 +1,3 @@
 export {AuthService} from './AuthService';
-export {HelloController} from './HelloController';
+export {RoleService} from './RoleService';
 export {VerificationCodeService} from './VerificationCodeService';

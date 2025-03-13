@@ -10,10 +10,11 @@ export type AllErrors = {
     } | {
         family: 'AUTH', 
         code: 'ACCOUNT_OR_PASSWORD_MISMATCH'
+    } | {
+        family: 'ROLE', 
+        code: 'ROLE_ALREADY_EXISTS'
     };
 export type ApiErrors = {
-    'helloController': {
-    }, 
     'authService': {
         'signUp': AllErrors & ({
                 family: 'VERIFICATION_CODE', 
@@ -31,6 +32,18 @@ export type ApiErrors = {
         'signIn': AllErrors & ({
                 family: 'AUTH', 
                 code: 'ACCOUNT_OR_PASSWORD_MISMATCH', 
+                readonly [key:string]: any
+            })
+    }, 
+    'roleService': {
+        'createRole': AllErrors & ({
+                family: 'ROLE', 
+                code: 'ROLE_ALREADY_EXISTS', 
+                readonly [key:string]: any
+            }), 
+        'updateRole': AllErrors & ({
+                family: 'ROLE', 
+                code: 'ROLE_ALREADY_EXISTS', 
                 readonly [key:string]: any
             })
     }, 

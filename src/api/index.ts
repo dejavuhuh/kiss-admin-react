@@ -1,3 +1,5 @@
+import { router } from '@/main'
+import { notification } from '@/utils'
 import { Api } from './__generated'
 
 const BASE_URL = '/api'
@@ -14,6 +16,12 @@ export const api = new Api(async ({ uri, method, headers, body }) => {
       ...(tenant !== undefined && tenant !== '' ? { tenant } : {}),
     },
   })
+  if (response.status === 401) {
+    await router.navigate({ to: '/sign-in', search: { redirect: location.pathname } })
+    notification.error({ message: '登录已过期，请重新登录' })
+    return
+  }
+
   if (response.status !== 200) {
     throw await response.json()
   }

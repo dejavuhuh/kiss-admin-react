@@ -22,9 +22,13 @@ import {
 } from '@mantine/core'
 import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { z } from 'zod'
 
 export const Route = createFileRoute('/_auth/sign-in')({
   component: SignIn,
+  validateSearch: z.object({
+    redirect: z.string().optional().catch(''),
+  }),
 })
 
 function handleError(error: ApiErrors['authService']['signIn']) {
@@ -35,12 +39,13 @@ function handleError(error: ApiErrors['authService']['signIn']) {
 
 function SignIn() {
   const navigate = Route.useNavigate()
+  const { redirect } = Route.useSearch()
 
   const signIn = useMutation({
     mutationFn: api.authService.signIn,
     onSuccess() {
       notification.success({ message: '欢迎回来' })
-      navigate({ to: '/' })
+      navigate({ to: redirect ?? '/' })
     },
   })
 

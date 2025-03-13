@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_dashboard')({
 })
 
 function DashboardLayout() {
-  const theme = useMantineTheme();
+  const theme = useMantineTheme()
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure()
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true)
 
@@ -21,7 +21,7 @@ function DashboardLayout() {
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
-      padding="md"
+      padding="sm"
       bg={theme.colors.gray[0]}
     >
       <AppShell.Header>
